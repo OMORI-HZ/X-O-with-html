@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, purple, blue);
+            background-size: 400% 400%;
+            animation: GradientBackground 15s ease infinite;
+        }
+
+        @keyframes GradientBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 150px);
+            gap: 10px;
+        }
+
+        .cell {
+            width: 150px;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3em;
+            cursor: pointer;
+            border: 2px solid #000;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+
+        .cell:hover {
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .red {
+            color: red;
+        }
+
+        .blue {
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div class="board">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+    </div>
+
+    <script>
+        const board = document.querySelector('.board');
+        const cells = document.querySelectorAll('.cell');
+        const player = 'X';
+        const computer = 'O';
+        let gameBoard = ['', '', '', '', '', '', '', '', ''];
+
+        cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+
+        function handleCellClick(e) {
+            const index = e.target.dataset.index;
+            if (gameBoard[index] === '') {
+                gameBoard[index] = player;
+                e.target.classList.add('red');
+                e.target.textContent = player;
+                if (checkWin(player)) {
+                    setTimeout(() => alert('You win!'), 10);
+                    resetBoard();
+                    return;
+                }
+                if (gameBoard.includes('')) {
+                    computerMove();
+                }
+            }
+        }
+
+        function computerMove() {
+            let emptyIndices = gameBoard.map((val, idx) => val === '' ? idx : null).filter(val => val !== null);
+            let move = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+            gameBoard[move] = computer;
+            cells[move].classList.add('blue');
+            cells[move].textContent = computer;
+            if (checkWin(computer)) {
+                setTimeout(() => alert('Computer wins!'), 10);
+                resetBoard();
+                return;
+            }
+        }
+
+        function checkWin(player) {
+            const winPatterns = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+            return winPatterns.some(pattern => 
+                pattern.every(index => gameBoard[index] === player)
+            );
+        }
+
+        function resetBoard() {
+            gameBoard = ['', '', '', '', '', '', '', '', ''];
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('red', 'blue');
+            });
+        }
+    </script>
+</body>
+</html>
